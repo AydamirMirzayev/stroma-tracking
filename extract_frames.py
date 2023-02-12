@@ -2,15 +2,19 @@ import os
 import argparse
 
 # Define parser
-parser = argparse.ArgumentParser(
-                    prog = 'Frame Extractor',
-                    description = 'Extracts every n-th frame from the input video',
-                    epilog = 'usage: extract_frames.py [in path] [N - for every Nth frame] [out folder path] [filename header]')
+# parser = argparse.ArgumentParser(
+#                     prog = 'Frame Extractor',
+#                     description = 'Extracts every n-th frame from the input video',
+#                     epilog = 'usage: extract_frames.py [in path] [N - for every Nth frame] [out folder path] [filename header]')
 
-parser.add_argument('in_path')
-parser.add_argument('N')
-parser.add_argument('out_path')
-parser.add_argument('header')
+# Define parser
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument('in_path', help = 'Path to the directory with input files')
+parser.add_argument('N', help = 'N - to extract each Nth frame', type = int)
+parser.add_argument('out_path', help = 'Path to the output directory')
+parser.add_argument('header', help = 'String to precede the names of the output files in format: <header>_<count>.png')
 
 # Adjsut the command string 
 args = parser.parse_args()
