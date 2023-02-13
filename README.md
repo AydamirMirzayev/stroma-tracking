@@ -12,6 +12,11 @@ ffmpeg -i ./images/test/test.mp4 -vf "select=not(mod(n\,10))" -vsync vfr ./frame
 
 python extract_frames.py ./data/images/test/test.mp4 10 ./data/frames/test test_frame
 
+-> Fix:
+ffmpeg conditioning was causing frame delay in extraction. Reverted to extracting all frames with 'ffmpeg -i <source> <target>' and then
+deleting intermediate files. 
+
+
 <h3>Data Formatting</h3> 
 
 json2yolo7.py is used to convert the images to the yolo format data
