@@ -6,7 +6,7 @@ import reconstruct_video
 
 EXPERIMENT_LIMIT = 100
 DETECT_FILE = './yolov7/detect.py'
-WEIGHTS = './yolov7/runs/train/exp13/weights/best.pt'
+WEIGHTS = './best.pt'
 CONFIDENCE_INTERVAL = 0.1
 
 if __name__ == '__main__':
