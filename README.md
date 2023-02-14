@@ -1,7 +1,7 @@
 
 <h1>About</h1>
 
-I chose to implement all the helper functions manually to ensure reusability and modularity. The main detector is trained is trained using YOLO7 implementation by https://github.com/WongKinYiu/yolov7. The dataset is modified to fit the requirements of the YOLO model. 
+I chose to implement all the helper functions manually to ensure reusability and modularity. The main detector is trained using YOLO7 implementation by https://github.com/WongKinYiu/yolov7. The dataset is modified to fit the requirements of the YOLO model. 
 
 
 <h1>Setup</h1>
