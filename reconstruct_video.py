@@ -12,6 +12,7 @@ optional arguments:
 
 usage: reconstruct_video.py [in path] [out folder path]
 """
+
 import cv2 
 import glob 
 import argparse
