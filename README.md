@@ -1,3 +1,9 @@
+<h1>Setup</h1>
+
+As it is conflicting to build the runtime enviroment locally, in this repository we will use the environment by google colab. 
+However, to keep the code modular and reusable. Background operations of the network are build on locally tested .py files 
+and can be easily integrated into locally or clound run application. To run the rpogram: 
+
 <h3>Data analysis</h3> 
 In notebook analyze_data check the distribution of the labels in the dataset as well as video format
 

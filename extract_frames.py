@@ -14,6 +14,7 @@ optional arguments:
 
 usage: extract_frames.py [in path] [N - for every Nth frame] [out folder path]
 """
+
 import os 
 import argparse
 
