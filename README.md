@@ -12,6 +12,10 @@ and can be easily integrated into locally or clound run application. To run the 
 
 Naviage to GoogleDriveEnvironmentSetup.ipynb and follow instructions for environment setup and inference
 
+<h1>Inference</h1>
+
+After initial setup navigate to Inference.ipynb
+
 <h3>Data analysis</h3> 
 In: analyze_data.ipynb
 
