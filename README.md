@@ -10,8 +10,7 @@ As it is conflicting to build the runtime enviroment locally, in this repository
 However, to keep the code modular and reusable. Background operations of the network are build on locally tested .py files 
 and can be easily integrated into locally or clound run application. To run the program: 
 
- Markup : * Installing necessary repositories
- 				* Naviage to StromaInference.ipynb and follow instructions for environment setup and inference
+Naviage to StromaInference.ipynb and follow instructions for environment setup and inference
 
 <h3>Data analysis</h3> 
 In: analyze_data.ipynb
