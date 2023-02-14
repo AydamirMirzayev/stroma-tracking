@@ -1,17 +1,52 @@
+""" 
+Sample COCO to YOLO converter
+usage: Json to YOLO [-h] in_path image_folder out_path
+
+Convert COCO annotations to YOLO annotations
+
+positional arguments:
+  in_path      Path to the directory with input files
+  image_folder Path to the directory with image files
+  out_path     Path to the output directory
+
+optional arguments:
+  -h, --help  show this help message and exit
+
+usage: json2yolo7.py [in path] [image_folder] [out folder path]
+"""
+
 import os
 import json
 import argparse
 import numpy as np
 import shutil
 
-# Create a parset 
-parser = argparse.ArgumentParser()
+def convert_json2yolo(in_path, image_folder, out_path):
+    data = load_json_data(in_path)
 
-parser.add_argument('in_path', help = 'Path to the directory with input files', type = str)
-parser.add_argument('image_folder', help = 'Path to the directory with image files', type = str)
-parser.add_argument('out_path', help = 'Path to the output directory', type = str)
+    # Per image basis 
+    filenames = [file['file_name'] for file in data['images']]
+    annotations = data['annotations']
 
-args = parser.parse_args()
+    # Create files. 
+    for i, annotation in enumerate(annotations):
+        image_id = annotation['image_id']
+        label_category = annotation['category_id']
+        # If the frame was extracted
+        if os.path.exists("{}/{:04d}.jpg".format(image_folder, image_id)):
+            bbox = annotation['bbox']
+            yl_bbox = convert_bbox(bbox, 640, 640)
+
+            # If the text file just being created copy the corresponding frame
+            if not os.path.exists("{}/labels/{:04d}.txt".format(out_path, image_id)):
+                shutil.copyfile("{}/{:04d}.jpg".format(image_folder, image_id), "{}/images/{:04d}.jpg".format(out_path, image_id))
+
+            # Open and write to atxt 
+            f = open("{}/labels/{:04d}.txt".format(out_path, image_id),"a")
+            f.write(f'{label_category-1} {yl_bbox[0]} {yl_bbox[1]} {yl_bbox[2]} {yl_bbox[3]} \n') # Verify the order later
+            f.close()
+
+    print('Done.')
 
 # Define functions
 def load_json_data(path):
@@ -37,32 +72,17 @@ def convert_bbox(bbox, im_height, im_width):
 
     return yolo_bbox
 
-data = load_json_data(args.in_path)
+if __name__ == '__main__':
+    # Create a parset 
+    parser = argparse.ArgumentParser()
 
-# Per image basis 
-filenames = [file['file_name'] for file in data['images']]
-annotations = data['annotations']
+    parser.add_argument('in_path', help = 'Path to the directory with input files', type = str)
+    parser.add_argument('image_folder', help = 'Path to the directory with image files', type = str)
+    parser.add_argument('out_path', help = 'Path to the output directory', type = str)
 
-# Create files. 
-for i, annotation in enumerate(annotations):
-    image_id = annotation['image_id']
-    label_category = annotation['category_id']
-    # If the frame was extracted
-    if os.path.exists("{}/{:04d}.jpg".format(args.image_folder, image_id)):
-        bbox = annotation['bbox']
-        yl_bbox = convert_bbox(bbox, 640, 640)
+    args = parser.parse_args()
 
-        # If the text file just being created copy the corresponding frame
-        if not os.path.exists("{}/labels/{:04d}.txt".format(args.out_path, image_id)):
-            shutil.copyfile("{}/{:04d}.jpg".format(args.image_folder, image_id), "{}/images/{:04d}.jpg".format(args.out_path, image_id))
-
-        # Open and write to atxt 
-        f = open("{}/labels/{:04d}.txt".format(args.out_path, image_id),"a")
-        f.write(f'{label_category-1} {yl_bbox[0]} {yl_bbox[1]} {yl_bbox[2]} {yl_bbox[3]} \n') # Verify the order later
-        f.close()
-
-print('Done.')
-
-
+    # Convert the labels
+    convert_json2yolo(args.in_path, args.image_folder, args.out_path)
 
 
