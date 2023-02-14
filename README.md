@@ -2,30 +2,36 @@
 
 As it is conflicting to build the runtime enviroment locally, in this repository we will use the environment by google colab. 
 However, to keep the code modular and reusable. Background operations of the network are build on locally tested .py files 
-and can be easily integrated into locally or clound run application. To run the rpogram: 
+and can be easily integrated into locally or clound run application. To run the program: 
+
+ Markup : * Installing necessary repositories
+ 				* Naviage to StromaInference.ipynb and follow instructions for environment setup and inference
+
 
 <h3>Data analysis</h3> 
-In notebook analyze_data check the distribution of the labels in the dataset as well as video format
+In: analyze_data.ipynb
+
+In notebook analyze_data check the distribution of the labels in the dataset as well as video format.
 
 <h3>Frame exraction</h3> 
-For the first set of experiments I decided to use every 10th frame. (3fps)
+In: extract_frames.py
 
+For the first set of experiments I decided to use every 10th frame. (3fps)
 Frames are exracted using ffmpeg library and python scripting
 
-[Faster Way] use the command below and then remane frame names since ffmpeg does not allow filename formatting. 
+<h3>COCO to YOLO conversion</h3>
+In: json2yolo7.py
 
-ffmpeg -i ./images/test/test.mp4 -vf "select=not(mod(n\,10))" -vsync vfr ./frames/test/test_frame_%03d.png
+Converting COCO labeling to YOLO labeling for each frame.
 
-python extract_frames.py ./data/images/test/test.mp4 10 ./data/frames/test test_frame
+<h3>Reconstructing video from frames</h3>
+In: reconstruct_video.py
 
--> Fix:
-ffmpeg conditioning was causing frame delay in extraction. Reverted to extracting all frames with 'ffmpeg -i <source> <target>' and then
-deleting intermediate files. 
+Converting individual frames to VIDEO .mp4 format.
 
+<h3>Predict on video</h3>
+In: predict_on_video.py
 
-<h3>Data Formatting</h3> 
-
-json2yolo7.py is used to convert the images to the yolo format data
-
+Bringing all the individual pieces together to convert input test video to a tracked video.
 
 
