@@ -1,0 +1,5 @@
+train: /content/gdrive/MyDrive/stroma-task/yolo_annotations/train/images
+val: /content/gdrive/MyDrive/stroma-task/yolo_annotations/val/images
+
+nc: 2
+names: ['bolt', 'nut']
