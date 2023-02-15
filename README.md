@@ -8,6 +8,8 @@ I chose to implement all the helper functions manually to ensure reusability and
 
 Result for provided test video in experiments/run1
 
+![](https://github.com/AydamirMirzayev/stroma-tracking/result.gif)
+
 <h1>Setup</h1>
 
 As it is conflicting to build the runtime enviroment locally, in this repository we will use the environment by google colab. 
