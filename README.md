@@ -8,7 +8,7 @@ I chose to implement all the helper functions manually to ensure reusability and
 
 Result for provided test video in experiments/run1
 
-![](https://github.com/AydamirMirzayev/stroma-tracking/result.gif)
+![](https://github.com/AydamirMirzayev/stroma-tracking/blob/master/result.gif)
 
 <h1>Setup</h1>
 
