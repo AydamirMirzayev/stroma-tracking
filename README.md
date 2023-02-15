@@ -4,6 +4,10 @@
 I chose to implement all the helper functions manually to ensure reusability and modularity. The main detector is trained using YOLO7 implementation by https://github.com/WongKinYiu/yolov7. The dataset is modified to fit the requirements of the YOLO model. 
 
 
+<h1>Results</h1>
+
+Result for provided test video in experiments/run1
+
 <h1>Setup</h1>
 
 As it is conflicting to build the runtime enviroment locally, in this repository we will use the environment by google colab. 

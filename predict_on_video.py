@@ -7,7 +7,7 @@ import reconstruct_video
 EXPERIMENT_LIMIT = 100
 DETECT_FILE = './yolov7/detect.py'
 WEIGHTS = './best.pt'
-CONFIDENCE_INTERVAL = 0.1
+CONFIDENCE_INTERVAL = 0.2
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(
