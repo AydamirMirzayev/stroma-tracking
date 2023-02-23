@@ -84,42 +84,31 @@ def get_labels_coordinates(lines):
          
     return data
 
-if __name__ == '__main__':
-    #Create a parser
-    parser = argparse.ArgumentParser(description='Count objects from the bounding bouxes using CentroidTracker')
-
-    parser.add_argument('labelsPath', help = 'Path to the directory with the label files', type = str)
-    parser.add_argument('framesPath', help = 'Path to the directory with frame image files', type = str)
-    parser.add_argument('targetFramePath', help = 'Path to the output directory for the image frames', type = str)
-    parser.add_argument('--maxGone', default=5, help='Maximum number of frames before object considered not present')
-    parser.add_argument('--topTresh', default=50, help='Top treshold which object needs to pass to be registered and counted')
-    parser.add_argument('--lowTresh', default=20, help='Lower Treshold after which object is deregistered and no longer tracked')
-    parser.add_argument('--minCandFrames', default = 5, help='Minimum number of frames object needs to be present to be registered and added to the list')
-    parser.add_argument('--maxDist', default =40, help='Maximum distance (pixels) it is plausible for an object to move between frames')
-
-    args = parser.parse_args()
+# Main functionality of the module
+def count_objects(labelsPath, framesPath, targetFramePath, maxDisappeared=5,\
+    upperTreshold = 50, lowerTreshold = 20, minCandidateFrames = 5, maxDist = 40):
 
     # Create centroid tracker objects
-    nutCentroids = ct.CentroidTracker(maxDisappeared=args.maxGone, upperTreshold = args.topTresh, lowerTreshold = args.lowTresh, minCandidateFrames = args.minCandFrames, maxDist = args.maxDist)
-    boltCentroids = ct.CentroidTracker(maxDisappeared=args.maxGone, upperTreshold = args.topTresh, lowerTreshold = args.lowTresh, minCandidateFrames = args.minCandFrames, maxDist = args.maxDist)
+    nutCentroids = ct.CentroidTracker(maxDisappeared, upperTreshold, lowerTreshold, minCandidateFrames, maxDist)
+    boltCentroids = ct.CentroidTracker(maxDisappeared, upperTreshold, lowerTreshold, minCandidateFrames, maxDist)
     
     # Keep track of maximum number of objects
     numOfBolts = 0
     numOfNuts = 0
 
     # Process every frame in the video
-    files = [path[-8:] for path in glob.glob( f'{args.framesPath}/*.jpg')]
+    files = [path[-8:] for path in glob.glob( f'{framesPath}/*.jpg')]
 
     for file in files:
         # Get the name of the image file and read it
         name = file.split('.')[0]
-        frame = cv2.imread(f'{args.framesPath}/{name}.jpg')
+        frame = cv2.imread(f'{framesPath}/{name}.jpg')
 
         # Check if there are any object coordinates for that object 
-        if os.path.exists(f'{args.labelsPath}/{name}.txt'):
+        if os.path.exists(f'{labelsPath}/{name}.txt'):
 
             # Read the text file containing the labels for the current frame
-    	    with open( f'{args.labelsPath}/{name}.txt') as f:
+    	    with open( f'{labelsPath}/{name}.txt') as f:
     	        labelLines = f.readlines()
     	    f.close()
     	    
@@ -157,4 +146,25 @@ if __name__ == '__main__':
         cv2.putText(frame, mainBoltText, (NUT_X, NUT_Y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
         # Write the updated frame to the target folder
-        cv2.imwrite(f'{args.targetFramePath}/{name}.jpg', frame)
+        cv2.imwrite(f'{targetFramePath}/{name}.jpg', frame)
+
+
+if __name__ == '__main__':
+    #Create a parser
+    parser = argparse.ArgumentParser(description='Count objects from the bounding bouxes using CentroidTracker')
+
+    parser.add_argument('labelsPath', help = 'Path to the directory with the label files', type = str)
+    parser.add_argument('framesPath', help = 'Path to the directory with frame image files', type = str)
+    parser.add_argument('targetFramePath', help = 'Path to the output directory for the image frames', type = str)
+    parser.add_argument('--maxGone', default=5, help='Maximum number of frames before object considered not present')
+    parser.add_argument('--topTresh', default=50, help='Top treshold which object needs to pass to be registered and counted')
+    parser.add_argument('--lowTresh', default=20, help='Lower Treshold after which object is deregistered and no longer tracked')
+    parser.add_argument('--minCandFrames', default = 5, help='Minimum number of frames object needs to be present to be registered and added to the list')
+    parser.add_argument('--maxDist', default =40, help='Maximum distance (pixels) it is plausible for an object to move between frames')
+
+    args = parser.parse_args()
+
+
+    count_objects(args.labelsPath, args.framesPath, args.targetFramePath,\
+    args.maxGone, args.topTresh, args.lowTresh, args.minCandFrames, args.maxDist)
+

@@ -3,6 +3,7 @@ import sys
 import argparse
 import extract_frames
 import reconstruct_video
+import count_objects as counter
 
 EXPERIMENT_LIMIT = 100
 DETECT_FILE = './yolov7/detect.py'
@@ -47,8 +48,16 @@ if __name__ == '__main__':
 
 	# Call prediction method
 	print('Running predictions....')
-	os.system(f'python {DETECT_FILE} --weights {WEIGHTS} --conf {CONFIDENCE_INTERVAL} --source ./experiments/run{experiment_id}/video_frames')
+	os.system(f'python {DETECT_FILE} --weights {WEIGHTS} --conf {CONFIDENCE_INTERVAL} --save-txt --source ./experiments/run{experiment_id}/video_frames')
 	print('\n Running predictions: Done.')
+
+	# Count the objects in the video 
+	print('Counting objects...')
+	if not os.path.exists('./yolov7/runs/detect/exp/counted_objects'):
+		os.mkdir('./yolov7/runs/detect/exp/counted_objects')
+		
+	counter.count_objects('./yolov7/runs/detect/exp/labels', './yolov7/runs/detect/exp', './yolov7/runs/detect/exp/counted_objects')
+	print('Done')
 
 	# Reassemble the video back. 
 	print('Reassembling video...')

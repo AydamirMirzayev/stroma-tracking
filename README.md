@@ -5,13 +5,11 @@ I chose to implement all the helper functions manually to ensure reusability and
 
 
 <h1>Results</h1>
-
 Result for provided test video in experiments/run1
 
 ![](https://github.com/AydamirMirzayev/stroma-tracking/blob/master/result.gif)
 
 <h1>Setup</h1>
-
 As it is conflicting to build the runtime enviroment locally, in this repository we will use the environment by google colab. 
 However, to keep the code modular and reusable. Background operations of the network are build on locally tested .py files 
 and can be easily integrated into locally or clound run application. To run the program: 
@@ -38,6 +36,27 @@ In: json2yolo7.py
 
 Converting COCO labeling to YOLO labeling for each frame.
 
+<h3>Object Counting</h3>
+
+Centroid Tracker Class adapted from 
+https://pyimagesearch.com/2018/07/23/simple-object-tracking-with-opencv/
+
+Following improvement have beed made on the class to customize it for the task at hand 
+
+1) Before registering new object it is first added to a waitlist and tracked for a minimum of 
+    'minCandidateFrames' to ensure that noisy detections are not counted.
+
+2) Since objects are falling from the top we add an additional protection agaist noise and ensure that obects pass
+    a user-set treshold of 'maxDist' before registering the object and incrementing the count 
+
+3) LowerTreshold is for future update where objects are marked as deregistered (left the frame) if they are below a 
+    certain treshold in the frame. 
+
+4) A treshold of maximum distance (maxDist) is introduced to ensure that two objects that are close are not matched to each other
+
+Later count_objects.py script is implemented that accepts set of video frames and corresponding labels and otpusts a set of frames with counts 
+imprinted on top
+
 <h3>Reconstructing video from frames</h3>
 In: reconstruct_video.py
 
@@ -48,4 +67,8 @@ In: predict_on_video.py
 
 Bringing all the individual pieces together to convert input test video to a tracked video.
 
+
+<h3>To do</h3>
+
+Update the counding for missing objects
 
