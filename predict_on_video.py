@@ -21,6 +21,8 @@ if __name__ == '__main__':
 
 	# Create the directory tree for the run 
 	experiment_id = 1
+	run_id = 1
+	
 	try: 
 		if not os.path.exists('./experiments'):
 			os.mkdir('./experiments')	
@@ -50,18 +52,22 @@ if __name__ == '__main__':
 	print('Running predictions....')
 	os.system(f'python {DETECT_FILE} --weights {WEIGHTS} --conf {CONFIDENCE_INTERVAL} --save-txt --source ./experiments/run{experiment_id}/video_frames')
 	print('\n Running predictions: Done.')
-
+    
 	# Count the objects in the video 
 	print('Counting objects...')
-	if not os.path.exists('./yolov7/runs/detect/exp/counted_objects'):
-		os.mkdir('./yolov7/runs/detect/exp/counted_objects')
+	
+	latest_run = sorted(os.listdir(f'./runs/detect'))
+	latest_run = latest_run[-1]
+	
+	if not os.path.exists(f'./runs/detect/{latest_run}/counted_objects'):
+		os.mkdir(f'./runs/detect/{latest_run}/counted_objects')
 		
-	counter.count_objects('./yolov7/runs/detect/exp/labels', './yolov7/runs/detect/exp', './yolov7/runs/detect/exp/counted_objects')
+	counter.count_objects(f'./runs/detect/{latest_run}/labels', f'./runs/detect/{latest_run}', f'./runs/detect/{latest_run}/counted_objects')
 	print('Done')
 
 	# Reassemble the video back. 
 	print('Reassembling video...')
-	reconstruct_video.generate_video('./yolov7/runs/detect/exp', f'./experiments/run{experiment_id}/results') 
+	reconstruct_video.generate_video(f'./runs/detect/{latest_run}/counted_objects', f'./experiments/run{experiment_id}/results') 
 	print('\n Reassembling video: Done.')
 
 
