@@ -163,8 +163,9 @@ class CentroidTracker():
                 # val
                 if row in usedRows or col in usedCols:
                     continue
-                    
-                if D[row, col] < self.maxDist:
+                
+                # Check if the object moved more than a plausible distance. 
+                if D[row, col] > self.maxDist:
                     usedRows.add(row)
                     usedCols.add(col)
                     continue

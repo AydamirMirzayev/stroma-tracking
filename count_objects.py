@@ -30,6 +30,8 @@ BOLT_X = 20
 NUT_X = 20
 BOLT_Y = 20
 NUT_Y = 40
+IM_WIDTH = 640
+IM_HEIGHT = 640
 
 # Given a set of YOLO coordinates converts them to a set of COCO coordinates
 def convert_yolo_to_COCO(bbox, imHeight, imWidth):
@@ -66,7 +68,7 @@ def get_labels_coordinates(lines):
         bbox = []
         for cor in line[2:].split(' '):
             bbox.append(float(cor))
-        bbox = convert_yolo_to_COCO(bbox, 640, 640)
+        bbox = convert_yolo_to_COCO(bbox, IM_HEIGHT, IM_WIDTH)
             
         if label == 0:
             boltCoordinates.append(bbox)
