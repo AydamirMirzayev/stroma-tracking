@@ -23,42 +23,14 @@ import cv2
 import glob
 import argparse
 import CentroidTracker as ct
+from constants import IM_WIDTH, IM_HEIGHT, FILENAME_LENGTH, X_IND, Y_IND
+from constants import WIDTH_IND, HEIGHT_IND, LABEL_INDEX, COORD_INDEX
+from constants import BOLT_LABEL, NUT_LABEL, NUTNUT_TEXT_COORD, BOLT_TEXT_COORD
+from constants import BACKGROUND_START_COORD, BACKGROUND_END_COORD, Y_OFFSET_COUNT
+from constants import BACKGROUND_THICKNESS, TOP_TEXT_COLOR, INPLACE_TEXT_COLOR
+from constants import BACKGROUND_COLOR_BGR, TOP_FONT_SCALE, TOP_FONT_THICK
+from constants import INP_FONT_SCALE, INP_FONT_THICK
 
-# Define constants for various offsets in text printing for the 
-# Image dimension constants
-IM_WIDTH = 640
-IM_HEIGHT = 640
-
-# Coordiate constrants
-NUT_TEXT_COORD = (20, 40)
-BOLT_TEXT_COORD = (15, 20)
-BACKGROUND_START_COORD = (5, 2)
-BACKGROUND_END_COORD = (115, 47)
-
-# Design constants
-Y_OFFSET_COUNT = 15
-BACKGROUND_THICKNESS = -1
-TOP_TEXT_COLOR = (256, 256, 256)
-INPLACE_TEXT_COLOR = (0, 255, 0)
-BACKGROUND_COLOR_BGR = (148, 83, 11)
-TOP_FONT_SCALE = 1
-TOP_FONT_THICK = 1
-INP_FONT_SCALE = 0.5 
-INP_FONT_THICK = 2
-
-
-# Index coordinate constants and string constants 
-FILENAME_LENGTH = 8
-X_IND = 0 # Index for x coordinate
-Y_IND = 1 # Index for y coordinate 
-WIDTH_IND = 2
-HEIGHT_IND = 3
-LABEL_INDEX = 0
-COORD_INDEX = 2
-
-# LABEL CONSTANTS
-BOLT_LABEL = 0
-NUT_LABEL = 1
 
 # Given a set of YOLO coordinates converts them to a set of COCO coordinates
 def convert_yolo_to_COCO(bbox, imHeight, imWidth):

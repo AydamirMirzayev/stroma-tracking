@@ -1,13 +1,7 @@
 from scipy.spatial import distance as dist
 from collections import OrderedDict
 import numpy as np
-
-# Image dimension constants
-IM_WIDTH = 640
-IM_HEIGHT = 640
-# Index coordinate constants and string constants 
-X_IND = 0 # Index for x coordinate
-Y_IND = 1 # Index for y coordinate 
+from constants import X_IND, Y_IND, IM_HEIGHT
 
 class CentroidTracker():
     '''
@@ -225,7 +219,7 @@ class CentroidTracker():
             # equal or greater than the number of input centroids
             # we need to check and see if some of these objects have
             # potentially disappeared
-            if D.shape[0] >= D.shape[1]:
+            if D.shape[X_IND] >= D.shape[Y_IND]:
                 # loop over the unused row indexes
                 for row in unusedRows:
                     # grab the object ID for the corresponding row
