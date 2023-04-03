@@ -41,21 +41,33 @@ BACKGROUND_THICKNESS = -1
 TOP_TEXT_COLOR = (256, 256, 256)
 INPLACE_TEXT_COLOR = (0, 255, 0)
 BACKGROUND_COLOR_BGR = (148, 83, 11)
-FONT_SCALE = 1
+TOP_FONT_SCALE = 1
+TOP_FONT_THICK = 1
+INP_FONT_SCALE = 1 
+INP_FONT_THICK = 1
+
 
 # Index coordinate constants and string constants 
 FILENAME_LENGTH = 8
 X_IND = 0 # Index for x coordinate
 Y_IND = 1 # Index for y coordinate 
+WIDTH_IND = 2
+HEIGHT_IND = 3
+LABEL_INDEX = 0
+COORD_INDEX = 2
+
+# LABEL CONSTANTS
+BOLT_LABEL = 0
+NUT_LABEL = 1
 
 # Given a set of YOLO coordinates converts them to a set of COCO coordinates
 def convert_yolo_to_COCO(bbox, imHeight, imWidth):
     COCO_bbox = []
     
-    xCenter = bbox[0]
-    yCenter = bbox[1]
-    width = int(round(bbox[2]*imWidth))
-    height = int(round(bbox[3]*imHeight))
+    xCenter = bbox[X_IND]
+    yCenter = bbox[Y_IND]
+    width = int(round(bbox[WIDTH_IND]*imWidth))
+    height = int(round(bbox[HEIGHT_IND]*imHeight))
     
     xmin = (xCenter*2*imWidth - width)/2
     xmin = int(round(xmin))
@@ -79,16 +91,16 @@ def get_labels_coordinates(lines):
 
     for line in lines:
         
-        label = int(line[0])                                                         # FIX 
+        label = int(line[LABEL_INDEX]) 
         bbox = []
-        for cor in line[2:].split(' '):                                              # FIX
+        for cor in line[COORD_INDEX:].split(' '):
             bbox.append(float(cor))
         bbox = convert_yolo_to_COCO(bbox, IM_HEIGHT, IM_WIDTH)
             
-        if label == 0:
+        if label == BOLT_LABEL:
             boltCoordinates.append(bbox)
             boltLabels.append(label)
-        else:
+        elif label == NUT_LABEL:
             nutCoordinates.append(bbox)
             nutLabels.append(label)
         
@@ -118,7 +130,7 @@ def count_objects(labelsPath, framesPath, targetFramePath, maxDisappeared=5,\
 
     for file in files:
         # Get the name of the image file and read it 
-        name = file.split('.')[0]                                                 
+        name = file.split('.')[0]   # Obtain first half of the filanme to obtain the name witout file extension                                                
         frame = cv2.imread(f'{framesPath}/{name}.jpg')
 
         # Check if there are any object coordinates for that object 
@@ -144,7 +156,8 @@ def count_objects(labelsPath, framesPath, targetFramePath, maxDisappeared=5,\
 
                 objectText = "Bolt: {}".format(objectID)
                 boltCoord = boltCoords[objectID]
-                cv2.putText(frame, objectText, (boltCoord[X_IND], boltCoord[Y_IND]- Y_OFFSET_COUNT), cv2.FONT_HERSHEY_SIMPLEX, 0.5, INPLACE_TEXT_COLOR, 2)
+                cv2.putText(frame, objectText, (boltCoord[X_IND], boltCoord[Y_IND]- Y_OFFSET_COUNT), \
+                    cv2.FONT_HERSHEY_SIMPLEX, INP_FONT_SCALE, INPLACE_TEXT_COLOR, INP_FONT_THICK)
     	        
     	    for i, (objectID, centroid) in enumerate(nuts.items()):
     	        if objectID > numOfNuts:
@@ -152,7 +165,8 @@ def count_objects(labelsPath, framesPath, targetFramePath, maxDisappeared=5,\
     	        
     	        objectText = "Nut:  {}".format(objectID)
     	        nutCoord = nutCoords[objectID]
-    	        cv2.putText(frame, objectText, (nutCoord[X_IND], nutCoord[Y_IND]- Y_OFFSET_COUNT), cv2.FONT_HERSHEY_SIMPLEX, 0.5, INPLACE_TEXT_COLOR, 2)
+    	        cv2.putText(frame, objectText, (nutCoord[X_IND], nutCoord[Y_IND]- Y_OFFSET_COUNT), \
+                    cv2.FONT_HERSHEY_SIMPLEX, INP_FONT_SCALE, INPLACE_TEXT_COLOR, INP_FONT_THICK)
         
         # Update the text on the frames
         mainBoltText = "Bolts:{}".format(numOfBolts)
@@ -160,8 +174,8 @@ def count_objects(labelsPath, framesPath, targetFramePath, maxDisappeared=5,\
 
         # Update Object count on the frames
         cv2.rectangle(frame, BACKGROUND_START_COORD, BACKGROUND_END_COORD, BACKGROUND_COLOR_BGR, BACKGROUND_THICKNESS)
-        cv2.putText(frame, mainBoltText, BOLT_TEXT_COORD, cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, TOP_TEXT_COLOR, 1)
-        cv2.putText(frame, mainNutText, NUT_TEXT_COORD, cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, TOP_TEXT_COLOR, 1)
+        cv2.putText(frame, mainBoltText, BOLT_TEXT_COORD, cv2.FONT_HERSHEY_COMPLEX_SMALL, TOP_FONT_SCALE, TOP_TEXT_COLOR, TOP_FONT_THICK)
+        cv2.putText(frame, mainNutText, NUT_TEXT_COORD, cv2.FONT_HERSHEY_COMPLEX_SMALL, TOP_FONT_SCALE, TOP_TEXT_COLOR, TOP_FONT_THICK)
         
 
         # Write the updated frame to the target folder
