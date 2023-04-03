@@ -21,6 +21,11 @@ import argparse
 import numpy as np
 import shutil
 
+
+IM_HEIGHT = 640
+IM_WIDTH = 640 
+
+
 def convert_json2yolo(in_path, image_folder, out_path):
     data = load_json_data(in_path)
 
@@ -35,7 +40,7 @@ def convert_json2yolo(in_path, image_folder, out_path):
         # If the frame was extracted
         if os.path.exists("{}/{:04d}.jpg".format(image_folder, image_id)):
             bbox = annotation['bbox']
-            yl_bbox = convert_bbox(bbox, 640, 640)
+            yl_bbox = convert_bbox(bbox, IM_HEIGHT, IM_WIDTH)
 
             # If the text file just being created copy the corresponding frame
             if not os.path.exists("{}/labels/{:04d}.txt".format(out_path, image_id)):
