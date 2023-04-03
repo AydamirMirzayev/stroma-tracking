@@ -43,8 +43,8 @@ INPLACE_TEXT_COLOR = (0, 255, 0)
 BACKGROUND_COLOR_BGR = (148, 83, 11)
 TOP_FONT_SCALE = 1
 TOP_FONT_THICK = 1
-INP_FONT_SCALE = 1 
-INP_FONT_THICK = 1
+INP_FONT_SCALE = 0.5 
+INP_FONT_THICK = 2
 
 
 # Index coordinate constants and string constants 
