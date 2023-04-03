@@ -2,6 +2,13 @@ from scipy.spatial import distance as dist
 from collections import OrderedDict
 import numpy as np
 
+# Image dimension constants
+IM_WIDTH = 640
+IM_HEIGHT = 640
+# Index coordinate constants and string constants 
+X_IND = 0 # Index for x coordinate
+Y_IND = 1 # Index for y coordinate 
+
 class CentroidTracker():
     '''
     Centroid Tracker Class adapted from 
@@ -20,7 +27,7 @@ class CentroidTracker():
 
     4) A treshold of maximum distance (maxDist) is introduced to ensure that two objects that are close are not matched to each other
     '''
-    def __init__(self, maxDisappeared=10, upperTreshold = 50, lowerTreshold = 50, minCandidateFrames = 10, maxDist = 40):
+    def __init__(self, maxDisappeared=10, upperTreshold = 50, lowerTreshold = 30, minCandidateFrames = 10, maxDist = 40):
         # initialize the next unique object ID along with two ordered
         # dictionaries used to keep track of mapping a given object
         # ID to its centroid and number of consecutive frames it has
@@ -81,6 +88,7 @@ class CentroidTracker():
         del self.candidateObjectScores[objectID]
     
     def update(self, rects): 
+
         # check to see if the list of input bounding box rectangles
         # is empty
         if len(rects) == 0:
@@ -102,7 +110,7 @@ class CentroidTracker():
 
             # return early as there are no centroids or tracking info
             # to update
-            return self.objects, self.objectCoordinates
+            return self.objects, self.objectCoordinates, self.disappeared
 
         # initialize an array of input centroids for the current frame
         inputCentroids = np.zeros((len(rects), 2), dtype="int")
@@ -176,15 +184,13 @@ class CentroidTracker():
                 objectID = objectIDs[row]
                 
                 # @aydamir
-                if objectID > 0: # If the object is candidate   
-                    #print('get hehehehe')
+                # If it is a tracked object  
+                if objectID > 0: 
                     self.objects[objectID] = inputCentroids[col]
                     self.objectCoordinates[objectID] = inputCoordinates[col]
                     self.disappeared[objectID] = 0
+                # Else if the object is a canditate
                 else:
-                    
-                    
-                    print('get here for: ', objectID)
                     self.candidateObjects[objectID] = inputCentroids[col]
                     self.candidateObjectScores[objectID] += 1
                     
@@ -192,11 +198,10 @@ class CentroidTracker():
                     # If object has been present for more than N number of frames 
                     # Add it to the list of objects
 
-                    print('Object Score: ', self.candidateObjectScores[objectID])
-                    print('Object Y coord: ', inputCentroids[col][1])
+                    #print('Object Score: ', self.candidateObjectScores[objectID])
+                    #print('Object Y coord: ', inputCentroids[col][1])
 
                     if self.candidateObjectScores[objectID] >= self.minCandidateFrames  and inputCoordinates[col][1] > self.upperTreshold:
-                        print('Pass the object')
                         self.register(inputCentroids[col], inputCoordinates[col])
                         self.remove_candidate(objectID)
 
@@ -204,6 +209,12 @@ class CentroidTracker():
                 # column indexes, respectively
                 usedRows.add(row)
                 usedCols.add(col)
+
+            # Deregister the objects that pass the lower treshold set by the user. 
+            tracked_objects = list(self.objects.keys())
+            for objectID in tracked_objects:
+                if self.objects[objectID][Y_IND] > IM_HEIGHT - self.lowerTreshold:
+                    self.deregister(objectID)
 
             # compute both the row and column index we have NOT yet
             # examined
@@ -240,4 +251,4 @@ class CentroidTracker():
                     #self.register(inputCentroids[col])
 
         # return the set of trackable objects
-        return self.objects, self.objectCoordinates
+        return self.objects, self.objectCoordinates, self.disappeared

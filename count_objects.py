@@ -144,8 +144,8 @@ def count_objects(labelsPath, framesPath, targetFramePath, maxDisappeared=5,\
             # Convert format in the files to the set of bouding boxes and labels
             # Update the object locations from tracked objects
     	    trackedObjects = get_labels_coordinates(labelLines) 
-    	    bolts, boltCoords = boltCentroids.update(trackedObjects['bolt_bboxes'])
-    	    nuts, nutCoords = nutCentroids.update(trackedObjects['nut_bboxes'])
+    	    bolts, boltCoords, boltDissapeared = boltCentroids.update(trackedObjects['bolt_bboxes'])
+    	    nuts, nutCoords, nutDissapeared = nutCentroids.update(trackedObjects['nut_bboxes'])
 
 
             # Go over updated bouding boxes and update the number of total objects accordingly
@@ -154,19 +154,23 @@ def count_objects(labelsPath, framesPath, targetFramePath, maxDisappeared=5,\
                 if objectID > numOfBolts:
                    numOfBolts = objectID
 
-                objectText = "Bolt: {}".format(objectID)
-                boltCoord = boltCoords[objectID]
-                cv2.putText(frame, objectText, (boltCoord[X_IND], boltCoord[Y_IND]- Y_OFFSET_COUNT), \
-                    cv2.FONT_HERSHEY_SIMPLEX, INP_FONT_SCALE, INPLACE_TEXT_COLOR, INP_FONT_THICK)
+                # Check to see if the object has previously dissaperated or not
+                if boltDissapeared[objectID] == 0:
+                    objectText = "Bolt: {}".format(objectID)
+                    boltCoord = boltCoords[objectID]
+                    cv2.putText(frame, objectText, (boltCoord[X_IND], boltCoord[Y_IND]- Y_OFFSET_COUNT), \
+                        cv2.FONT_HERSHEY_SIMPLEX, INP_FONT_SCALE, INPLACE_TEXT_COLOR, INP_FONT_THICK)
     	        
     	    for i, (objectID, centroid) in enumerate(nuts.items()):
-    	        if objectID > numOfNuts:
-    	            numOfNuts = objectID
-    	        
-    	        objectText = "Nut:  {}".format(objectID)
-    	        nutCoord = nutCoords[objectID]
-    	        cv2.putText(frame, objectText, (nutCoord[X_IND], nutCoord[Y_IND]- Y_OFFSET_COUNT), \
-                    cv2.FONT_HERSHEY_SIMPLEX, INP_FONT_SCALE, INPLACE_TEXT_COLOR, INP_FONT_THICK)
+                if objectID > numOfNuts:
+                    numOfNuts = objectID
+
+                # Do not print objects that have dissaperated as this causes confusing looking outputs
+                if nutDissapeared[objectID] == 0: 
+                    objectText = "Nut:  {}".format(objectID)
+                    nutCoord = nutCoords[objectID]
+                    cv2.putText(frame, objectText, (nutCoord[X_IND], nutCoord[Y_IND]- Y_OFFSET_COUNT), \
+                        cv2.FONT_HERSHEY_SIMPLEX, INP_FONT_SCALE, INPLACE_TEXT_COLOR, INP_FONT_THICK)
         
         # Update the text on the frames
         mainBoltText = "Bolts:{}".format(numOfBolts)
@@ -191,7 +195,7 @@ if __name__ == '__main__':
     parser.add_argument('targetFramePath', help = 'Path to the output directory for the image frames', type = str)
     parser.add_argument('--maxGone', default=5, help='Maximum number of frames before object considered not present')
     parser.add_argument('--topTresh', default=50, help='Top treshold which object needs to pass to be registered and counted')
-    parser.add_argument('--lowTresh', default=20, help='Lower Treshold after which object is deregistered and no longer tracked')
+    parser.add_argument('--lowTresh', default=30, help='Lower Treshold after which object is deregistered and no longer tracked')
     parser.add_argument('--minCandFrames', default = 5, help='Minimum number of frames object needs to be present to be registered and added to the list')
     parser.add_argument('--maxDist', default =40, help='Maximum distance (pixels) it is plausible for an object to move between frames')
 
