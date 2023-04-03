@@ -25,13 +25,28 @@ import argparse
 import CentroidTracker as ct
 
 # Define constants for various offsets in text printing for the 
-WRITE_OFFSET = 5
-BOLT_X = 20
-NUT_X = 20
-BOLT_Y = 20
-NUT_Y = 40
+# Image dimension constants
 IM_WIDTH = 640
 IM_HEIGHT = 640
+
+# Coordiate constrants
+NUT_TEXT_COORD = (20, 40)
+BOLT_TEXT_COORD = (15, 20)
+BACKGROUND_START_COORD = (5, 2)
+BACKGROUND_END_COORD = (115, 47)
+
+# Design constants
+Y_OFFSET_COUNT = 15
+BACKGROUND_THICKNESS = -1
+TOP_TEXT_COLOR = (256, 256, 256)
+INPLACE_TEXT_COLOR = (0, 255, 0)
+BACKGROUND_COLOR_BGR = (148, 83, 11)
+FONT_SCALE = 1
+
+# Index coordinate constants and string constants 
+FILENAME_LENGTH = 8
+X_IND = 0 # Index for x coordinate
+Y_IND = 1 # Index for y coordinate 
 
 # Given a set of YOLO coordinates converts them to a set of COCO coordinates
 def convert_yolo_to_COCO(bbox, imHeight, imWidth):
@@ -64,9 +79,9 @@ def get_labels_coordinates(lines):
 
     for line in lines:
         
-        label = int(line[0])
+        label = int(line[0])                                                         # FIX 
         bbox = []
-        for cor in line[2:].split(' '):
+        for cor in line[2:].split(' '):                                              # FIX
             bbox.append(float(cor))
         bbox = convert_yolo_to_COCO(bbox, IM_HEIGHT, IM_WIDTH)
             
@@ -99,11 +114,11 @@ def count_objects(labelsPath, framesPath, targetFramePath, maxDisappeared=5,\
     numOfNuts = 0
 
     # Process every frame in the video
-    files = [path[-8:] for path in glob.glob( f'{framesPath}/*.jpg')]
+    files = [path[-FILENAME_LENGTH:] for path in glob.glob( f'{framesPath}/*.jpg')]
 
     for file in files:
-        # Get the name of the image file and read it
-        name = file.split('.')[0]
+        # Get the name of the image file and read it 
+        name = file.split('.')[0]                                                 
         frame = cv2.imread(f'{framesPath}/{name}.jpg')
 
         # Check if there are any object coordinates for that object 
@@ -129,7 +144,7 @@ def count_objects(labelsPath, framesPath, targetFramePath, maxDisappeared=5,\
 
                 objectText = "Bolt: {}".format(objectID)
                 boltCoord = boltCoords[objectID]
-                cv2.putText(frame, objectText, (boltCoord[0] - WRITE_OFFSET, boltCoord[1]- WRITE_OFFSET), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                cv2.putText(frame, objectText, (boltCoord[X_IND], boltCoord[Y_IND]- Y_OFFSET_COUNT), cv2.FONT_HERSHEY_SIMPLEX, 0.5, INPLACE_TEXT_COLOR, 2)
     	        
     	    for i, (objectID, centroid) in enumerate(nuts.items()):
     	        if objectID > numOfNuts:
@@ -137,15 +152,17 @@ def count_objects(labelsPath, framesPath, targetFramePath, maxDisappeared=5,\
     	        
     	        objectText = "Nut:  {}".format(objectID)
     	        nutCoord = nutCoords[objectID]
-    	        cv2.putText(frame, objectText, (nutCoord[0] - WRITE_OFFSET, nutCoord[1]- WRITE_OFFSET), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+    	        cv2.putText(frame, objectText, (nutCoord[X_IND], nutCoord[Y_IND]- Y_OFFSET_COUNT), cv2.FONT_HERSHEY_SIMPLEX, 0.5, INPLACE_TEXT_COLOR, 2)
         
         # Update the text on the frames
-        mainBoltText = "Bolts: {}".format(numOfBolts)
-        mainNutText = "Nuts: {}".format(numOfNuts)
+        mainBoltText = "Bolts:{}".format(numOfBolts)
+        mainNutText = "Nuts:{}".format(numOfNuts)
 
         # Update Object count on the frames
-        cv2.putText(frame, mainNutText, (BOLT_X, BOLT_Y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-        cv2.putText(frame, mainBoltText, (NUT_X, NUT_Y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+        cv2.rectangle(frame, BACKGROUND_START_COORD, BACKGROUND_END_COORD, BACKGROUND_COLOR_BGR, BACKGROUND_THICKNESS)
+        cv2.putText(frame, mainBoltText, BOLT_TEXT_COORD, cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, TOP_TEXT_COLOR, 1)
+        cv2.putText(frame, mainNutText, NUT_TEXT_COORD, cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, TOP_TEXT_COLOR, 1)
+        
 
         # Write the updated frame to the target folder
         cv2.imwrite(f'{targetFramePath}/{name}.jpg', frame)
@@ -165,7 +182,6 @@ if __name__ == '__main__':
     parser.add_argument('--maxDist', default =40, help='Maximum distance (pixels) it is plausible for an object to move between frames')
 
     args = parser.parse_args()
-
 
     count_objects(args.labelsPath, args.framesPath, args.targetFramePath,\
     args.maxGone, args.topTresh, args.lowTresh, args.minCandFrames, args.maxDist)
